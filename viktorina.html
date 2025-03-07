@@ -1,0 +1,220 @@
+
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Викторина</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <h2 class="quiz-question">Какая страна первая начала праздновать 8 марта?</h2>
+        <form id="quiz-form">
+            <label class="answer-option">
+                <input type="radio" name="answer" value="США">
+                <span class="answer-text">США</span>
+            </label>
+            <label class="answer-option">
+                <input type="radio" name="answer" value="Германия">
+                <span class="answer-text">Германия</span>
+            </label>
+            <label class="answer-option">
+                <input type="radio" name="answer" value="Канада">
+                <span class="answer-text">Канада</span>
+            </label><br><br>
+            <button type="button" class="submit-button" onclick="checkAnswer()">Ответить</button>
+        </form>
+        <p id="result" class="result-message"></p>
+    </div>
+    
+    <style>
+      /* Общие стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.quiz-container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    animation: fadeIn 1s ease-out;
+}
+
+.quiz-question {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    animation: slideDown 0.5s ease-out;
+}
+
+/* Стили для вариантов ответа */
+.answer-option {
+    display: block;
+    margin: 10px 0;
+    font-size: 1.2rem;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.answer-option:hover {
+    background-color: #00bcd4;
+    transform: scale(1.05);
+}
+
+.answer-option input {
+    display: none;
+}
+
+.answer-text {
+    font-weight: bold;
+    color: #333;
+}
+
+.answer-option input:checked + .answer-text {
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Стили для кнопки */
+.submit-button {
+    padding: 12px 30px;
+    font-size: 1.2rem;
+    color: white;
+    background: #00bcd4;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
+    margin-top: 20px;
+}
+
+.submit-button:hover {
+    background: #4facfe;
+    transform: translateY(-2px);
+}
+
+/* Стили для результата */
+.result-message {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 20px;
+    animation: fadeIn 1s ease-out;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    0% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+    </style>
+
+    <script>
+        let questionIndex = 0;
+        const questions = [
+            {
+                question: "Какая страна первая начала праздновать 8 марта?",
+                correctAnswer: "США",
+                options: ["США", "Германия", "Канада"]
+            }
+        ];
+
+        function loadQuestion() {
+            const questionData = questions[questionIndex];
+            const questionElement = document.querySelector('.quiz-question');
+            const form = document.getElementById('quiz-form');
+            const resultMessage = document.getElementById('result');
+
+            questionElement.textContent = questionData.question;
+            form.querySelectorAll('label').forEach((label, index) => {
+                label.querySelector('span').textContent = questionData.options[index];
+                label.querySelector('input').disabled = false;  // Разрешаем выбор ответов
+            });
+            resultMessage.textContent = '';  // Очищаем результат перед новым вопросом
+            form.querySelector('button').disabled = false; // Включаем кнопку "Ответить"
+        }
+
+        function checkAnswer() {
+            const radios = document.getElementsByName('answer');
+            let selectedAnswer = '';
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    selectedAnswer = radios[i].value.trim(); // Убираем пробелы с начала и конца
+                    break;
+                }
+            }
+
+            if (!selectedAnswer) {
+                alert('Пожалуйста, выберите ответ.');
+                return;
+            }
+
+            const resultMessage = document.getElementById('result');
+            const correctAnswer = questions[questionIndex].correctAnswer.trim();
+            
+            if (selectedAnswer == correctAnswer) {
+                resultMessage.textContent = 'Правильный ответ!';
+                resultMessage.style.color = 'green';
+            } else {
+                resultMessage.textContent = `Неправильный ответ. Правильный ответ: ${correctAnswer}.`;
+                resultMessage.style.color = 'red';
+            }
+
+            // После ответа, делаем невозможным изменение ответа
+            document.querySelectorAll('input').forEach(input => input.disabled = true);
+            // Делаем кнопку "Ответить" недоступной
+            document.querySelector('.submit-button').disabled = true;
+
+            // Переход к следующему вопросу через 2 секунды
+            setTimeout(nextQuestion, 2000);
+        }
+
+        function nextQuestion() {
+            questionIndex++;
+            if (questionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                document.querySelector('.quiz-container').innerHTML = '<h2>Конец!</h2>';
+            }
+        }
+
+        // Загружаем первый вопрос при старте
+        loadQuestion();
+    </script>
+</body>
+</html>
